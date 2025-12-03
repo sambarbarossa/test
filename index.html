@@ -254,11 +254,11 @@
             return (
                 <div className="flex h-screen bg-slate-900 text-slate-100 font-sans overflow-hidden">
                     
-                    {/* COLONNA 1: SCALETTA */}
-                    <div className="w-64 bg-slate-950 border-r border-slate-800 flex flex-col z-20 shadow-xl">
+                    {/* COLONNA 1: SCALETTA (Larghezza in percentuale) */}
+                    <div className="w-[20%] min-w-[220px] max-w-[300px] bg-slate-950 border-r border-slate-800 flex flex-col z-20 shadow-xl transition-all">
                         <div className="p-4 border-b border-slate-800 flex items-center gap-2">
                             <IconList className="text-blue-400" />
-                            <h2 className="font-bold text-lg tracking-wide">SCALETTA</h2>
+                            <h2 className="font-bold text-lg tracking-wide hidden md:block">SCALETTA</h2>
                         </div>
                         
                         <div className="flex-1 overflow-y-auto">
@@ -283,8 +283,8 @@
                                             onClick={(e) => e.stopPropagation()}
                                         />
                                     ) : (
-                                        <div className="flex flex-col">
-                                            <span className="font-medium truncate max-w-[140px]">{song.name}</span>
+                                        <div className="flex flex-col overflow-hidden">
+                                            <span className="font-medium truncate text-sm md:text-base">{song.name}</span>
                                             <span className="text-[10px] opacity-50">{song.timeline.length} blocchi</span>
                                         </div>
                                     )}
@@ -302,28 +302,29 @@
                                 onClick={addSong}
                                 className="w-full py-2 bg-slate-800 hover:bg-slate-700 rounded text-sm font-bold flex items-center justify-center gap-2 transition-colors border border-slate-700"
                             >
-                                <IconPlus size={16} /> NUOVA CANZONE
+                                <IconPlus size={16} /> 
+                                <span className="hidden md:inline">NUOVA CANZONE</span>
                             </button>
                         </div>
                     </div>
 
                     {/* AREA CENTRALE: TIMELINE EDITOR */}
-                    <div className="flex-1 flex flex-col relative bg-slate-900">
+                    <div className="flex-1 flex flex-col relative bg-slate-900 min-w-0">
                         
                         {/* HEADER TIMELINE */}
-                        <div className="h-16 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-6 shadow-sm z-10">
-                            <div className="flex items-center gap-4">
-                                <h1 className="text-xl font-bold text-white truncate max-w-md">
+                        <div className="h-16 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-6 shadow-sm z-10 shrink-0">
+                            <div className="flex items-center gap-4 overflow-hidden">
+                                <h1 className="text-lg md:text-xl font-bold text-white truncate max-w-md">
                                     {currentSong.name}
                                 </h1>
-                                <span className="bg-slate-800 text-xs px-2 py-1 rounded text-slate-400 border border-slate-700">
+                                <span className="bg-slate-800 text-xs px-2 py-1 rounded text-slate-400 border border-slate-700 whitespace-nowrap hidden sm:block">
                                     {timeline.length} Eventi MIDI
                                 </span>
                             </div>
 
                             <div className="flex items-center gap-4">
                                 {/* MIDI Selector */}
-                                <div className="flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700">
+                                <div className="hidden sm:flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700">
                                     <IconWifi size={14} className={outputs.length > 0 ? "text-green-400" : "text-red-400"} />
                                     <select 
                                         className="bg-transparent text-xs focus:outline-none max-w-[120px] text-slate-300"
@@ -347,14 +348,14 @@
                                     }`}
                                 >
                                     {isPlaying ? <IconSquare size={16} /> : <IconPlay size={16} />}
-                                    <span>{isPlaying ? "STOP" : "PLAY"}</span>
+                                    <span className="hidden sm:inline">{isPlaying ? "STOP" : "PLAY"}</span>
                                 </button>
                             </div>
                         </div>
 
                         {/* TIMELINE VISUALIZZAZIONE */}
-                        <div className="flex-1 overflow-x-auto overflow-y-hidden p-8 relative no-scrollbar">
-                            <div className="flex items-center h-full gap-2 min-w-max pb-20 pt-10">
+                        <div className="flex-1 overflow-x-auto overflow-y-hidden p-8 relative no-scrollbar bg-slate-900/50">
+                            <div className="flex items-center h-full gap-2 min-w-max pb-4">
                                 
                                 <div className="w-4 h-full border-l-2 border-dashed border-slate-700 absolute left-8 top-0 pointer-events-none"></div>
 
@@ -371,7 +372,7 @@
                                         `}
                                         style={{
                                             width: `${Math.max(60, block.duration / 5)}px`, 
-                                            height: '140px'
+                                            height: '35vh' /* Altezza relativa alla viewport */
                                         }}
                                     >
                                         {/* BARRA CURSORE (ANIMAZIONE) */}
@@ -384,8 +385,8 @@
                                             />
                                         )}
 
-                                        <span className="relative z-10 text-xl font-bold drop-shadow-md">{midiToNoteName(block.note)}</span>
-                                        <span className="relative z-10 text-[10px] opacity-80 mt-1">{block.duration}ms</span>
+                                        <span className="relative z-10 font-bold drop-shadow-md" style={{ fontSize: '3vh' }}>{midiToNoteName(block.note)}</span>
+                                        <span className="relative z-10 opacity-80 mt-1" style={{ fontSize: '1.5vh' }}>{block.duration}ms</span>
                                         
                                         <button 
                                             onClick={(e) => { e.stopPropagation(); removeBlock(block.id); }}
@@ -396,10 +397,11 @@
                                     </div>
                                 ))}
 
-                                {/* ADD BUTTON */}
+                                {/* ADD BUTTON (ADATTIVO) */}
                                 <button 
                                     onClick={addBlock}
-                                    className="h-[140px] w-16 ml-4 rounded-lg border-2 border-dashed border-slate-700 flex flex-col justify-center items-center hover:bg-slate-800 hover:border-slate-500 hover:text-white transition-colors text-slate-600"
+                                    className="w-20 ml-4 rounded-lg border-2 border-dashed border-slate-700 flex flex-col justify-center items-center hover:bg-slate-800 hover:border-slate-500 hover:text-white transition-colors text-slate-600"
+                                    style={{ height: '35vh' }}
                                 >
                                     <IconPlus size={24} />
                                 </button>
@@ -407,10 +409,10 @@
                         </div>
                     </div>
 
-                    {/* COLONNA 3: PROPRIETÀ */}
-                    <div className="w-72 bg-slate-950 border-l border-slate-800 p-6 flex flex-col gap-6 shadow-xl z-20 overflow-y-auto">
+                    {/* COLONNA 3: PROPRIETÀ (Larghezza in percentuale) */}
+                    <div className="w-[25%] min-w-[250px] max-w-[350px] bg-slate-950 border-l border-slate-800 p-6 flex flex-col gap-6 shadow-xl z-20 overflow-y-auto transition-all">
                         <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
-                            <IconSettings size={16} /> Editor Blocco
+                            <IconSettings size={16} /> <span className="hidden sm:inline">Editor Blocco</span>
                         </h2>
 
                         {selectedBlockId ? (
